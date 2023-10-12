@@ -89,7 +89,16 @@ final class RussianCentralBank extends HttpService
      */
     public function supportQuery(ExchangeRateQuery $exchangeQuery): bool
     {
-        return 'RUB' === $exchangeQuery->getCurrencyPair()->getQuoteCurrency();
+        if ('RUB' !== $exchangeQuery->getCurrencyPair()->getQuoteCurrency()) {
+            return false;
+        }
+
+        try {
+            $this->getLatestExchangeRate($exchangeQuery);
+            return true;
+        } catch (UnsupportedCurrencyPairException $exception) {
+            return false;
+        }
     }
 
     /**

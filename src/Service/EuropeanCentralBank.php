@@ -90,7 +90,16 @@ final class EuropeanCentralBank extends HttpService
      */
     public function supportQuery(ExchangeRateQuery $exchangeQuery): bool
     {
-        return 'EUR' === $exchangeQuery->getCurrencyPair()->getBaseCurrency();
+        if ('EUR' !== $exchangeQuery->getCurrencyPair()->getBaseCurrency()) {
+            return false;
+        }
+
+        try {
+            $this->getLatestExchangeRate($exchangeQuery);
+            return true;
+        } catch (UnsupportedCurrencyPairException $exception) {
+            return false;
+        }
     }
 
     /**
